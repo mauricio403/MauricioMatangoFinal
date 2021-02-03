@@ -2,46 +2,78 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using System.Data.SqlClient;
+
 using System.Data;
 using MauricioMatangoFinal.Models;
 
-
 namespace MauricioMatangoFinal.Controllers
 {
-    [Authorize]
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class Controller_Heroes : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly IConfiguration _configuration;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public Controller_Heroes(IConfiguration configuration)
         {
-            _logger = logger;
+            _configuration = configuration;
         }
-
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public JsonResult Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            string query = @"select * from dbo.Heroe";
+            DataTable table = new DataTable();
+
+            string sqlDataSource = _configuration.GetConnectionString("HeroTourAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+                myCon.Open();
+                using (SqlCommand myComand = new SqlCommand(query, myCon))
+                {
+                    myReader = myComand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+            return new JsonResult(table);
         }
+        [HttpGet("{id}")]
+        public JsonResult Get(int id)
+        {
+            string query = @"select * from dbo.Heroe
+                                where id = " + id + @"
+                                ";
+            DataTable table = new DataTable();
+
+            string sqlDataSource = _configuration.GetConnectionString("HeroTourAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open(); ;
+                using (SqlCommand myComand = new SqlCommand(query, myCon))
+                {
+                    myReader = myComand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+            return new JsonResult(table);
+        }
+        
+        
     }
 }
