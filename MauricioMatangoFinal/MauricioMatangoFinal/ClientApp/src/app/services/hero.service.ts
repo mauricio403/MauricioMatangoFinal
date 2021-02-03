@@ -18,7 +18,7 @@ export class HeroService {
               private http: HttpClient,
 
               ) {
-                this.urlHeroes = 'http://localhost:5000/api';
+                this.urlHeroes = 'http://localhost';
               }
 
   //Traer la información desde el servidor
