@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardComponent } from './dashboard.component';
+import { DashboardComponent } from './primerComponent.component';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -19,7 +19,3 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
